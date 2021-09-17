@@ -1,0 +1,61 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+
+namespace Homework_007
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool fileSearch = File.Exists(@"daily.txt"); // проверяем наличие файла
+            if(fileSearch == false)
+            {
+                File.Create(@"daily.txt");
+            }
+
+            string path = @"daily.txt";
+            DailyMassive dailyMassive = new DailyMassive(path); //создаем экземпляр структуры
+           
+            bool cycle = true;
+            byte answer = 0;
+
+            while(cycle)
+            {
+                answer = dailyMassive.Choice(answer);
+
+                switch(answer)
+                {
+                    case 1:
+                        dailyMassive.Entry(); // добавить новую запись
+                        break;
+                    case 2:
+                        dailyMassive.Show(); // отобразить все записи
+                        break;
+                    case 3:
+                        dailyMassive.Delete(); // удалить запись
+                        break;
+                    case 4:
+                        dailyMassive.Edit(); // редактировать запись
+                        break;
+                    case 5:
+                        dailyMassive.Sort(); // сортировка по полю
+                        break;
+                    case 6:
+                        dailyMassive.TimeSpan(); // выборка по времени
+                        break;
+                    case 7:
+                        dailyMassive.GameOver(); // сохранение и закрытие консоли
+                        break;
+                }
+            }           
+
+
+            Console.ReadKey();
+        }     
+    }
+    
+}
