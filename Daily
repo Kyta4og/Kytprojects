@@ -58,4 +58,348 @@ namespace Homework_007
         }     
     }
     
+    struct Daily
+    {
+        private int position; // № записи
+        private ulong number; // номер телефона
+        private string description; // описание 
+        private string name; // имя
+        private DateTime time; // время создания записи
+
+        public Daily(int Position, ulong Number, string Description, string Name, DateTime Time)
+        {
+            this.position = Position;
+            this.number = Number;
+            this.description = Description;
+            this.name = Name;
+            this.time = Time;
+        }
+
+        public int Position { get { return this.position; } set { this.position = value; } }
+        public ulong Number { get { return this.number; } set { this.number = value; } }
+        public string Description { get { return this.description; } set { this.description = value; } }
+        public string Name { get { return this.name; } set { this.name = value; } }
+        public DateTime Time { get { return this.time; } set { this.time = value; } }
+    }
+    
+     struct DailyMassive
+    {
+        private int index;
+        private string path;
+        private Daily[] notesList; //массив для хранения записей
+
+        /// <summary>
+        /// Создаем массив и запускаем загрузку данных в него
+        /// </summary>
+        /// <param name="Path"></param>
+        public DailyMassive(string Path)
+        {
+            this.path = Path;
+            this.index = 0;
+            this.notesList = new Daily[1];
+            this.Load();
+        }
+
+        /// <summary>
+        /// Увеличение размерности массива по мере его заполнения
+        /// </summary>
+        /// <param name="flag"></param>
+        private void Resize(bool flag)
+        {
+            if(flag)
+            {
+                Array.Resize(ref this.notesList, this.notesList.Length + 10);
+            }
+        }
+
+        /// <summary>
+        /// Меню выбора дальнейшего действия программы
+        /// </summary>
+        /// <param name="Answer"></param>
+        /// <returns></returns>
+        public byte Choice(byte Answer)
+        {
+            byte answer;
+            Console.WriteLine(new string('=', 50));
+            Console.WriteLine("Выберите действие: \n" +
+                "1. Добавить новую запись в ежедневник. \n" +
+                "2. Показать все записи. \n" +
+                "3. Удалить запись из ежедневника. \n" +
+                "4. Отредактировать запись. \n" +
+                "5. Упорядочить по выбранному полю. \n" +
+                "6. Загрузить записи в диапазоне дат. \n" +
+                "7. Сохранить и завершить работу.");
+            Console.WriteLine(new string('=', 50));
+
+            while (true)
+            {
+                bool x = byte.TryParse(Console.ReadLine(), out answer);
+                if (answer > 0 & answer < 8) break;
+                else Console.WriteLine("Введено неверное значение, попробуйте еще раз.");
+            }
+            return answer;
+        }
+
+        /// <summary>
+        /// Метод , отображающий записи в массиве
+        /// </summary>
+        public void Show()
+        {
+            for(int i = 0; i < this.notesList.Length; i++)
+            {
+                if (this.notesList[i].Position != 0)
+                {
+                    Console.WriteLine("{0}|{1}|{2}|{3}|{4}",
+                                                 this.notesList[i].Position,
+                                                 this.notesList[i].Number,
+                                                 this.notesList[i].Description,
+                                                 this.notesList[i].Name,
+                                                 this.notesList[i].Time);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Метод сортировки массива по полям
+        /// </summary>
+        public void Sort()
+        {
+            Console.WriteLine("Выберите по какому полю производить сортировку (1 - 5): \n" +
+                "1. Позиция. \n" +
+                "2. Номер телефона \n" +
+                "3. Описание \n" +
+                "4. Имя \n" +
+                "5. Время");
+            byte answer;
+            while (true)
+            {
+                bool x = byte.TryParse(Console.ReadLine(), out answer);
+                if (answer > 0 & answer < 6) break;
+                else Console.WriteLine("Введено неверное значение, попробуйте еще раз.");
+            }
+
+            Console.WriteLine("Сортировать по: \n" +
+                "1. Возрастанию \n" +
+                "2. Убыванию");
+            byte y;
+            while (true)
+            {
+                bool x = byte.TryParse(Console.ReadLine(), out y);
+                if (y > 0 & y < 3) break;
+                else Console.WriteLine("Введено неверное значение, попробуйте еще раз.");
+            }
+
+            switch (answer)
+            {
+                case 1:
+                    if(y == 2) Array.Sort(notesList, (x, yz) => yz.Position.CompareTo(x.Position));
+                    else Array.Sort(notesList, (x, yz) => x.Position.CompareTo(yz.Position));                    
+                    break;
+                case 2:
+                    if (y == 2) Array.Sort(notesList, (x, yz) => yz.Number.CompareTo(x.Number));
+                    else Array.Sort(notesList, (x, yz) => x.Number.CompareTo(yz.Number));
+                    break;
+                case 3:
+                    if (y == 2) Array.Sort(notesList, (x, yz) => yz.Description.CompareTo(x.Description));
+                    else Array.Sort(notesList, (x, yz) => x.Description.CompareTo(yz.Description));
+                    break;
+                case 4:
+                    if(y == 2) Array.Sort(notesList, (x, yz) => yz.Name.CompareTo(x.Name));
+                    else Array.Sort(notesList, (x, yz) => x.Name.CompareTo(yz.Name));
+                    break;
+                case 5:
+                    if (y == 2) Array.Sort(notesList, (x, yz) => yz.Time.CompareTo(x.Time));
+                    else Array.Sort(notesList, (x, yz) => x.Time.CompareTo(yz.Time));
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Метод задания диапазона дат
+        /// </summary>
+        public void TimeSpan()
+        {
+            Console.WriteLine("Введите нижнюю границу: ");
+            int day, month, year;
+            while (true)
+            {
+                Console.Write("Число: ");
+                day = Convert.ToInt32(Console.ReadLine());
+                if (day > 0 & day < 32) break;
+            }
+            while (true)
+            {
+                Console.Write("Месяц: ");
+                month = Convert.ToInt32(Console.ReadLine());
+                if (month > 0 & month < 13) break;
+            }
+            while (true)
+            {
+                Console.Write("Год: ");
+                year = Convert.ToInt32(Console.ReadLine());
+                if (year > 1000 & year < 3000) break;
+            }
+
+            DateTime startSpan = new DateTime(year, month, day);
+            int day2, month2, year2;
+
+            Console.WriteLine("Введите верхнюю границу: ");
+            while (true)
+            {
+                Console.Write("Число: ");
+                day2 = Convert.ToInt32(Console.ReadLine());
+                if (day2 > 0 & day2 < 32) break;
+            }
+            while (true)
+            {
+                Console.Write("Месяц: ");
+                month2 = Convert.ToInt32(Console.ReadLine());
+                if (month2 > 0 & month2 < 13) break;
+            }
+            while (true)
+            {
+                Console.Write("Год: ");
+                year2 = Convert.ToInt32(Console.ReadLine());
+                if (year2 > 1000 & year2 < 3000) break;
+            }
+
+            DateTime endSpan = new DateTime(year2, month2, day2);
+
+            for (int i = 0; i < notesList.Length; i++)
+                if (startSpan.Date <= notesList[i].Time && notesList[i].Time < endSpan)
+                {
+                    Console.WriteLine("{0}|{1}|{2}|{3}|{4}",
+                                             this.notesList[i].Position,
+                                             this.notesList[i].Number,
+                                             this.notesList[i].Description,
+                                             this.notesList[i].Name,
+                                             this.notesList[i].Time);
+                }
+        }
+
+        /// <summary>
+        /// Метод завершения программы
+        /// </summary>
+        public void GameOver()
+        {
+            Save(@"daily.txt");
+            Console.WriteLine("Нажмите любую кнопку");
+            Console.ReadKey();
+            Environment.Exit(0);
+        }
+
+        /// <summary>
+        /// Метод удаления записей
+        /// </summary>
+        public void Delete()
+        {
+            Console.WriteLine("Введите номер строки для удаления: ");
+            byte answer = Convert.ToByte(Console.ReadLine());
+
+            Array.Clear(this.notesList, answer-1, 1);
+
+            Save(path);
+        }
+
+        /// <summary>
+        /// Метод редактирования записей
+        /// </summary>
+        public void Edit()
+        {
+            int flag = 1;
+            byte x;
+            for(int i = 1; i < notesList.Length; i++)
+            {
+                if (notesList[i].Position != 0) flag++;
+            }
+            while (true)
+            {
+                Console.WriteLine("Введите номер строки для редактирования: ");
+                x = Convert.ToByte(Console.ReadLine());
+                if (x < 1 | x > flag) Console.WriteLine("Вы ввели неверное значение, попробуйте еще раз.");
+                else break;
+            }
+            x--;
+            Console.WriteLine("Введите номер: ");
+            notesList[x].Number = Convert.ToUInt64(Console.ReadLine());
+            Console.WriteLine("Введите описание: ");
+            notesList[x].Description = Console.ReadLine();
+            Console.WriteLine("Введите имя: ");
+            notesList[x].Name = Console.ReadLine();
+            notesList[x].Time = DateTime.Now;
+        }
+        /// <summary>
+        /// Метод, записывающий строку значений в массив
+        /// </summary>
+        /// <param name="NewEntry"></param>
+        public void Add(Daily NewEntry)
+        {
+            this.Resize(index >= this.notesList.Length);
+            this.notesList[index] = NewEntry;
+            this.index++;
+        }
+
+        /// <summary>
+        /// Метод добавления новой записи
+        /// </summary>
+        public void Entry()
+        {
+            int position = 1;
+            for(int i = 0; i < notesList.Length; i++)
+            {
+                if( notesList[i].Position != 0)
+                {
+                    position++;
+                }
+            }
+            Console.WriteLine("Введите номер телефона: ");
+            ulong phoneNumber = Convert.ToUInt64(Console.ReadLine());
+            Console.WriteLine("Введите описание: ");
+            string description = Console.ReadLine();
+            Console.WriteLine("Введите имя: ");
+            string name = Console.ReadLine();
+
+            Add(new Daily(position, phoneNumber, description, name, DateTime.Now));
+            Save(@"daily.txt");
+        }
+
+        /// <summary>
+        ///  Метод загрузки значений из файла
+        /// </summary>
+        public void Load()
+        {
+            using(StreamReader sr = new StreamReader("daily.txt"))
+            {
+                while(!sr.EndOfStream)
+                {
+                    string[] args = sr.ReadLine().Split('|');
+
+                    Add(new Daily(Convert.ToInt32(args[0]), Convert.ToUInt64(args[1]), args[2], args[3], Convert.ToDateTime(args[4])));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Метод сохранения массива в файл
+        /// </summary>
+        /// <param name="Path"></param>
+        public void Save(string Path)
+        {
+            File.Delete(@"daily.txt");
+
+            for (int i = 0; i < this.index; i++)
+            {
+                if (notesList[i].Position != 0)
+                {
+                    string temp = String.Format("{0}|{1}|{2}|{3}|{4}",
+                                             this.notesList[i].Position,
+                                             this.notesList[i].Number,
+                                             this.notesList[i].Description,
+                                             this.notesList[i].Name,
+                                             this.notesList[i].Time);
+                    File.AppendAllText(Path, $"{temp}\n");
+                }
+            }
+        }
+    }
 }
